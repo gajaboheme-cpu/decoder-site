@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Body Decoder · Gaja Bohème</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #06100a;
+    --emerald: #1E5C2A;
+    --emerald-light: #2a7a38;
+    --emerald-glow: #3aad50;
+    --gold: #C9A84C;
+    --gold-light: #e0bf6e;
+    --gold-dim: #8a7035;
+    --text: #e8e0d0;
+    --text-muted: #9e9688;
+    --border: rgba(201,168,76,0.18);
+    --border-hover: rgba(201,168,76,0.45);
+    --radius: 12px;
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-body: 'Jost', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg); color: var(--text);
+    font-family: var(--font-body); font-size: 16px;
+    line-height: 1.65; min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.4;
+  }
+  body::after {
+    content: ''; position: fixed;
+    top: -30vh; left: 50%; transform: translateX(-50%);
+    width: 80vw; height: 60vh;
+    background: radial-gradient(ellipse, rgba(30,92,42,0.18) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+  .wrapper {
+    position: relative; z-index: 1;
+    max-width: 720px; margin: 0 auto;
+    padding: 0 20px 60px; min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+  .header {
+    text-align: center; padding: 32px 0 28px;
+    border-bottom: 1px solid var(--border); margin-bottom: 40px;
+  }
+  .header-eyebrow {
+    font-size: 10px; font-weight: 500; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 14px;
+  }
+  .header-logo { height: 52px; width: auto; display: block; margin: 0 auto; filter: brightness(1.05); }
+  .screen { display: none; animation: fadeUp 0.5s ease both; }
+  .screen.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .screen-title {
+    font-family: var(--font-display); font-size: clamp(28px, 5vw, 40px);
+    font-weight: 400; color: var(--gold); line-height: 1.2;
+    margin-bottom: 10px; text-align: center;
+  }
+  .screen-subtitle { font-size: 15px; color: var(--text-muted); text-align: center; margin-bottom: 36px; line-height: 1.6; }
+  .section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+  .tags-grid { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 28px; }
+  .tag {
+    background: transparent; border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 50px; padding: 8px 16px;
+    font-family: var(--font-body); font-size: 13px;
+    color: var(--text-muted); cursor: pointer;
+    transition: all 0.18s ease; user-select: none;
+  }
+  .tag:hover { border-color: var(--gold); color: var(--text); background: rgba(201,168,76,0.07); }
+  .tag.selected { background: rgba(201,168,76,0.15); border-color: var(--gold); color: var(--gold-light); }
+  .textarea-label { font-size: 10px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; display: block; }
+  .symptom-textarea {
+    width: 100%; min-height: 120px;
+    background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px 18px;
+    color: var(--text); font-family: var(--font-body);
+    font-size: 14px; line-height: 1.65; resize: vertical; outline: none;
+    transition: border-color 0.2s; margin-bottom: 32px;
+  }
+  .symptom-textarea:focus { border-color: rgba(201,168,76,0.5); }
+  .symptom-textarea::placeholder { color: var(--text-muted); }
+  .lead-card {
+    background: linear-gradient(160deg, rgba(30,92,42,0.1), rgba(6,16,10,0) 60%);
+    border: 1px solid var(--border); border-radius: 16px;
+    padding: 44px 40px; max-width: 480px; margin: 0 auto;
+  }
+  .input-group { margin-bottom: 18px; }
+  .input-label { display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 7px; }
+  .form-input {
+    width: 100%; background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 13px 16px; color: var(--text);
+    font-family: var(--font-body); font-size: 15px;
+    outline: none; transition: border-color 0.2s;
+  }
+  .form-input:focus { border-color: var(--gold); }
+  .form-input::placeholder { color: var(--text-muted); }
+  .consent-text { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin: 20px 0 28px; }
+  .btn-primary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; background: linear-gradient(135deg, var(--emerald), #165022);
+    border: 1px solid rgba(201,168,76,0.3); border-radius: 50px;
+    padding: 17px 32px; font-family: var(--font-body);
+    font-size: 13px; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--gold-light);
+    cursor: pointer; transition: all 0.22s ease;
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(30,92,42,0.4); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .btn-secondary {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 100%; background: transparent;
+    border: 1px solid var(--border-hover); border-radius: 50px;
+    padding: 14px 32px; font-family: var(--font-body);
+    font-size: 12px; font-weight: 500; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--text-muted);
+    cursor: pointer; text-decoration: none; transition: all 0.22s ease; margin-top: 12px;
+  }
+  .btn-secondary:hover { border-color: var(--gold); color: var(--gold-light); }
+  .loading-state { text-align: center; padding: 60px 20px; }
+  .loading-orb {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: radial-gradient(circle, var(--emerald-light), var(--emerald));
+    margin: 0 auto 28px; animation: pulse 2s ease-in-out infinite;
+    box-shadow: 0 0 40px rgba(30,92,42,0.5);
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.85; }
+    50% { transform: scale(1.12); opacity: 1; box-shadow: 0 0 60px rgba(58,173,80,0.6); }
+  }
+  .loading-text { font-family: var(--font-display); font-size: 22px; color: var(--gold); margin-bottom: 10px; transition: opacity 0.3s; }
+  .loading-sub { font-size: 13px; color: var(--text-muted); }
+  .dots { display: inline-flex; gap: 5px; }
+  .dots span { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); animation: dotBounce 1.2s ease-in-out infinite; }
+  .dots span:nth-child(2) { animation-delay: 0.2s; }
+  .dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dotBounce {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+  .result-header { text-align: center; margin-bottom: 48px; }
+  .result-greeting { font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+  .result-title { font-family: var(--font-display); font-size: clamp(30px, 5vw, 44px); font-weight: 400; line-height: 1.15; color: var(--text); }
+  .decode-section { border-left: 2px solid rgba(201,168,76,0.25); padding-left: 24px; margin-bottom: 48px; }
+  .section-tag { font-size: 9px; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; display: block; }
+  .decode-text { font-family: var(--font-display); font-size: clamp(17px, 2.5vw, 20px); font-weight: 300; line-height: 1.75; color: var(--text); }
+  .decode-text p { margin-bottom: 18px; }
+  .decode-text p:last-child { margin-bottom: 0; }
+  .divider { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 0 auto 40px; }
+  .compass-section { margin-bottom: 48px; }
+  .compass-wrap { position: relative; width: 260px; height: 260px; margin: 32px auto 28px; }
+  .compass-svg { width: 100%; height: 100%; }
+  .compass-direction { position: absolute; font-family: var(--font-display); font-size: 13px; font-weight: 500; color: var(--text-muted); transition: color 0.4s, text-shadow 0.4s; }
+  .compass-direction.active { color: var(--gold-light); text-shadow: 0 0 20px rgba(201,168,76,0.6); }
+  .compass-direction.north { top: -24px; left: 50%; transform: translateX(-50%); text-align: center; }
+  .compass-direction.east { right: -44px; top: 50%; transform: translateY(-50%); }
+  .compass-direction.south { bottom: -24px; left: 50%; transform: translateX(-50%); text-align: center; }
+  .compass-direction.west { left: -44px; top: 50%; transform: translateY(-50%); text-align: right; }
+  .compass-result-label { text-align: center; font-family: var(--font-display); font-size: 26px; font-weight: 500; color: var(--gold); margin-bottom: 6px; }
+  .compass-result-sub { text-align: center; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--emerald-glow); margin-bottom: 20px; }
+  .compass-explanation { font-family: var(--font-display); font-size: 17px; font-weight: 300; line-height: 1.75; color: var(--text); text-align: center; max-width: 520px; margin: 0 auto; }
+  .open-loop-text { font-family: var(--font-display); font-size: 17px; font-style: italic; color: var(--text-muted); text-align: center; margin-bottom: 10px; line-height: 1.7; }
+  .cta-section { background: linear-gradient(135deg, rgba(30,92,42,0.14), rgba(201,168,76,0.06)); border: 1px solid var(--border); border-radius: 16px; padding: 36px 32px; text-align: center; }
+  .cta-tension-line { font-size: 12px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 16px; }
+  .cta-body-text { font-family: var(--font-display); font-size: 19px; font-weight: 400; line-height: 1.65; color: var(--text); margin-bottom: 28px; }
+  .cta-btn-primary {
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--emerald), #165022);
+    border: 1px solid rgba(201,168,76,0.3); border-radius: 50px;
+    padding: 19px 32px; font-family: var(--font-body);
+    font-size: 13px; font-weight: 600; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--gold-light);
+    text-decoration: none; transition: all 0.22s; width: 100%; margin-bottom: 12px;
+  }
+  .cta-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(30,92,42,0.4); }
+  .cta-btn-secondary {
+    display: flex; align-items: center; justify-content: center;
+    background: transparent; border: 1px solid var(--border-hover);
+    border-radius: 50px; padding: 14px 32px;
+    font-family: var(--font-body); font-size: 12px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--text-muted); text-decoration: none;
+    transition: all 0.22s; width: 100%;
+  }
+  .cta-btn-secondary:hover { border-color: var(--gold); color: var(--gold-light); }
+  .error-msg { background: rgba(180,60,60,0.12); border: 1px solid rgba(180,60,60,0.3); border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #e09090; margin-bottom: 18px; display: none; }
+  .error-msg.visible { display: block; }
+  .footer { margin-top: auto; padding-top: 52px; text-align: center; }
+  .footer-divider { width: 100%; height: 1px; background: var(--border); margin: 0 0 20px; }
+  .footer-line { font-size: 11px; letter-spacing: 0.15em; color: var(--text-muted); margin-bottom: 14px; text-transform: uppercase; }
+  .footer-disclaimer { font-size: 11px; font-style: italic; color: rgba(158,150,136,0.55); line-height: 1.7; max-width: 560px; margin: 0 auto; }
+  @media (max-width: 520px) {
+    .lead-card { padding: 32px 24px; }
+    .cta-section { padding: 28px 20px; }
+    .decode-section { padding-left: 16px; }
+    .compass-direction.east { right: -36px; }
+    .compass-direction.west { left: -36px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header class="header">
+    <div class="header-eyebrow">Gaja Bohème · The Vortex</div>
+    <img src="https://assets.cdn.filesafe.space/Mk6qgk4V5NI1q3R0QLYa/media/69ac4a45618c8d04bf5350d5.png" alt="Gaja Bohème" class="header-logo">
+  </header>
+
+  <!-- SCREEN 1 -->
+  <div id="screen-1" class="screen active">
+    <h1 class="screen-title">What Is Your Body Trying to Tell You?</h1>
+    <p class="screen-subtitle">Pick what resonates. Add anything else below. Your body already has the answers.</p>
+    <div class="section-label">Select what feels true right now</div>
+    <div class="tags-grid" id="tags-container"></div>
+    <span class="textarea-label">Or describe it in your own words</span>
+    <textarea class="symptom-textarea" id="custom-input" placeholder="I've been feeling... (share as much or as little as you want)"></textarea>
+    <div class="error-msg" id="screen1-error">Please select at least one symptom or describe how you feel.</div>
+    <button class="btn-primary" onclick="goToScreen2()">Reveal My Body Decode ✦</button>
+  </div>
+
+  <!-- SCREEN 2 -->
+  <div id="screen-2" class="screen">
+    <div class="lead-card">
+      <p class="result-greeting" style="margin-bottom:10px;">Almost there</p>
+      <h2 class="screen-title">Where Should We Send Your Decode?</h2>
+      <p class="screen-subtitle" style="font-size:14px;">Your body has been speaking. It is time to listen.</p>
+      <div class="input-group">
+        <label class="input-label" for="first-name">First Name</label>
+        <input type="text" id="first-name" class="form-input" placeholder="Your first name">
+      </div>
+      <div class="input-group">
+        <label class="input-label" for="email">Email</label>
+        <input type="email" id="email" class="form-input" placeholder="your@email.com">
+      </div>
+      <p class="consent-text">By continuing, you agree to receive your decode results and occasional wellness insights from Gaja Bohème. No spam, ever. Unsubscribe anytime.</p>
+      <div class="error-msg" id="screen2-error">Please fill in your name and a valid email.</div>
+      <button class="btn-primary" onclick="runDecode()">Show Me My Decode ✦</button>
+      <button class="btn-secondary" onclick="showScreen(1)">← Go Back</button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div id="screen-loading" class="screen">
+    <div class="loading-state">
+      <div class="loading-orb"></div>
+      <p class="loading-text" id="loading-text">Reading your body...</p>
+      <p class="loading-sub"><span class="dots"><span></span><span></span><span></span></span></p>
+    </div>
+  </div>
+
+  <!-- SCREEN 3 -->
+  <div id="screen-3" class="screen">
+    <div class="result-header">
+      <p class="result-greeting" id="result-greeting"></p>
+      <h2 class="result-title">Here Is What Your Body Is Saying</h2>
+    </div>
+
+    <div class="decode-section">
+      <span class="section-tag">✦ Your Personal Decode</span>
+      <div class="decode-text" id="decode-content"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="compass-section">
+      <span class="section-tag" style="text-align:center;display:block;">✦ Your Vortex Compass Direction</span>
+      <div class="compass-wrap">
+        <span class="compass-direction north" id="dir-north">Connect<br><small style="font-size:10px;opacity:0.7;font-family:var(--font-body);letter-spacing:0.1em;">NORTH</small></span>
+        <span class="compass-direction east" id="dir-east">Shine<br><small style="font-size:10px;opacity:0.7;font-family:var(--font-body);letter-spacing:0.1em;">EAST</small></span>
+        <span class="compass-direction south" id="dir-south">Nourish<br><small style="font-size:10px;opacity:0.7;font-family:var(--font-body);letter-spacing:0.1em;">SOUTH</small></span>
+        <span class="compass-direction west" id="dir-west">Release<br><small style="font-size:10px;opacity:0.7;font-family:var(--font-body);letter-spacing:0.1em;">WEST</small></span>
+        <svg class="compass-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" id="compass-svg">
+          <defs>
+            <radialGradient id="circleGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#1E5C2A" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#06100a" stop-opacity="0.1"/>
+            </radialGradient>
+            <radialGradient id="activeGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#C9A84C" stop-opacity="0.5"/>
+              <stop offset="60%" stop-color="#1E5C2A" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#06100a" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>
+          <circle cx="100" cy="100" r="68" fill="none" stroke="rgba(201,168,76,0.12)" stroke-width="1"/>
+          <circle cx="100" cy="100" r="68" fill="url(#circleGrad)"/>
+          <circle cx="100" cy="100" r="68" fill="url(#activeGlow)" opacity="0" id="active-glow-circle"/>
+          <line x1="100" y1="10" x2="100" y2="190" stroke="rgba(201,168,76,0.15)" stroke-width="1"/>
+          <line x1="10" y1="100" x2="190" y2="100" stroke="rgba(201,168,76,0.15)" stroke-width="1"/>
+          <circle cx="100" cy="32" r="3" fill="rgba(201,168,76,0.3)" id="dot-north"/>
+          <circle cx="168" cy="100" r="3" fill="rgba(201,168,76,0.3)" id="dot-east"/>
+          <circle cx="100" cy="168" r="3" fill="rgba(201,168,76,0.3)" id="dot-south"/>
+          <circle cx="32" cy="100" r="3" fill="rgba(201,168,76,0.3)" id="dot-west"/>
+          <polygon points="100,36 104,100 100,96 96,100" fill="#C9A84C" opacity="0.7" id="needle-up" filter="url(#glow)"/>
+          <polygon points="100,164 104,100 100,104 96,100" fill="rgba(201,168,76,0.3)" id="needle-down"/>
+          <circle cx="100" cy="100" r="6" fill="var(--bg)" stroke="rgba(201,168,76,0.6)" stroke-width="1.5"/>
+          <circle cx="100" cy="100" r="2.5" fill="var(--gold)"/>
+        </svg>
+      </div>
+      <p class="compass-result-label" id="compass-label"></p>
+      <p class="compass-result-sub" id="compass-sublabel"></p>
+      <p class="compass-explanation" id="compass-explanation"></p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="decode-section" id="micro-guidance-wrap" style="display:none;">
+      <span class="section-tag">✦ One Place to Start</span>
+      <p class="decode-text" id="micro-guidance"></p>
+    </div>
+
+    <div class="divider" id="micro-divider" style="display:none;"></div>
+
+    <div class="cta-section">
+      <p class="open-loop-text" id="open-loop-text"></p>
+      <p class="cta-tension-line">Most people stop at awareness. That is why the pattern repeats.</p>
+      <p class="cta-body-text">What you just saw is a starting point. Your body does not operate in isolated symptoms. It follows patterns. This is the exact framework I use to guide people through deeper change.</p>
+      <a href="https://gajaboheme.com/services" target="_blank" class="cta-btn-primary">Go Deeper Into Your Body's Pattern ✦</a>
+      <a href="https://gajaboheme.com/sacred-alchemist-academy" target="_blank" class="cta-btn-secondary">Understand the Full Method</a>
+    </div>
+
+    <div style="margin-top:32px;text-align:center;">
+      <button class="btn-secondary" style="width:auto;padding:11px 28px;font-size:11px;" onclick="startOver()">Start a New Decode</button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-divider"></div>
+    <p class="footer-line">Gaja Bohème Holistic Wellness · South Florida · Cater to Your Higher Self</p>
+    <p class="footer-disclaimer">This tool is offered from a psychosomatic and spiritual lens and is intended for self-reflection and personal insight only. It does not constitute medical advice, diagnosis, or treatment. Please consult a qualified healthcare professional for any physical or mental health concerns.</p>
+  </footer>
+
+</div>
+
+<script>
+const TAGS = [
+  "Exhaustion","Tight chest","Gut tension","Shoulder tension",
+  "Numbness","Racing mind","Sugar cravings","No motivation",
+  "Heart heavy","Overwhelmed","Sleep issues","Feeling unseen",
+  "Grief","Fear of visibility","Always giving","Lower back pain",
+  "Skin issues","Headaches","Anxiety","Brain fog",
+  "Jaw tension","Throat tight","Digestive issues","Skipping meals"
+];
+
+const GHL_WEBHOOK_URL = "https://services.leadconnectorhq.com/hooks/Mk6qgk4V5NI1q3R0QLYa/webhook-trigger/ZP4Mf48Evn9RfwwPzNXy";
+
+let selectedTags = [];
+let userData = {};
+
+window.addEventListener('DOMContentLoaded', () => { renderTags(); showScreen(1); });
+
+function renderTags() {
+  const container = document.getElementById('tags-container');
+  TAGS.forEach(tag => {
+    const el = document.createElement('button');
+    el.className = 'tag'; el.textContent = tag;
+    el.addEventListener('click', () => toggleTag(el, tag));
+    container.appendChild(el);
+  });
+}
+
+function toggleTag(el, tag) {
+  if (selectedTags.includes(tag)) { selectedTags = selectedTags.filter(t => t !== tag); el.classList.remove('selected'); }
+  else { selectedTags.push(tag); el.classList.add('selected'); }
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById(`screen-${id}`);
+  if (target) { target.classList.add('active'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+}
+
+function goToScreen2() {
+  const custom = document.getElementById('custom-input').value.trim();
+  const errEl = document.getElementById('screen1-error');
+  if (selectedTags.length === 0 && !custom) { errEl.classList.add('visible'); return; }
+  errEl.classList.remove('visible'); showScreen(2);
+}
+
+function startOver() {
+  selectedTags = [];
+  document.querySelectorAll('.tag').forEach(t => t.classList.remove('selected'));
+  document.getElementById('custom-input').value = '';
+  document.getElementById('first-name').value = '';
+  document.getElementById('email').value = '';
+  showScreen(1);
+}
+
+async function runDecode() {
+  const name = document.getElementById('first-name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const errEl = document.getElementById('screen2-error');
+  if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errEl.classList.add('visible'); return; }
+  errEl.classList.remove('visible');
+  userData = { name, email };
+  const custom = document.getElementById('custom-input').value.trim();
+  const symptoms = [...selectedTags];
+  if (custom) symptoms.push(custom);
+  showScreen('loading');
+  animateLoadingText();
+  try {
+    const response = await fetch('/api/decode', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, symptoms })
+    });
+    if (!response.ok) { const err = await response.json(); throw new Error(err.error || 'Something went wrong.'); }
+    const data = await response.json();
+    const result = data.result;
+    sendToGHL(name, email, result.direction, result.directionLabel);
+    renderResults(name, result);
+    showScreen(3);
+  } catch (err) {
+    showScreen(2);
+    const e2 = document.getElementById('screen2-error');
+    e2.textContent = `Something went wrong: ${err.message}`; e2.classList.add('visible');
+  }
+}
+
+const loadingMessages = ["Reading your body...","Listening to what it is carrying...","Mapping your Vortex direction...","Your decode is almost ready..."];
+let loadingIdx = 0; let loadingTimer = null;
+
+function animateLoadingText() {
+  loadingIdx = 0;
+  const el = document.getElementById('loading-text');
+  if (loadingTimer) clearInterval(loadingTimer);
+  el.textContent = loadingMessages[0];
+  loadingTimer = setInterval(() => {
+    loadingIdx = (loadingIdx + 1) % loadingMessages.length;
+    el.style.opacity = '0';
+    setTimeout(() => { el.textContent = loadingMessages[loadingIdx]; el.style.opacity = '1'; }, 300);
+  }, 2200);
+}
+
+function renderResults(name, result) {
+  if (loadingTimer) clearInterval(loadingTimer);
+  document.getElementById('result-greeting').textContent = `For you, ${name}`;
+  const decodeEl = document.getElementById('decode-content');
+  const paragraphs = result.decode.split('||').map(p => p.trim()).filter(Boolean);
+  decodeEl.innerHTML = paragraphs.map(p => `<p>${p}</p>`).join('');
+  animateCompass(result.direction);
+  document.getElementById('compass-label').textContent = result.directionLabel;
+  document.getElementById('compass-sublabel').textContent = result.direction;
+  document.getElementById('compass-explanation').textContent = result.compassExplanation;
+  if (result.microGuidance) {
+    document.getElementById('micro-guidance').textContent = result.microGuidance;
+    document.getElementById('micro-guidance-wrap').style.display = 'block';
+    document.getElementById('micro-divider').style.display = 'block';
+  }
+  if (result.openLoop) document.getElementById('open-loop-text').textContent = result.openLoop;
+}
+
+function animateCompass(direction) {
+  const dirMap = {
+    NORTH: { el: 'dir-north', dot: 'dot-north', angle: 0 },
+    EAST:  { el: 'dir-east',  dot: 'dot-east',  angle: 90 },
+    SOUTH: { el: 'dir-south', dot: 'dot-south',  angle: 180 },
+    WEST:  { el: 'dir-west',  dot: 'dot-west',   angle: 270 }
+  };
+  Object.values(dirMap).forEach(d => {
+    document.getElementById(d.el).classList.remove('active');
+    document.getElementById(d.dot).setAttribute('fill', 'rgba(201,168,76,0.3)');
+    document.getElementById(d.dot).setAttribute('r', '3');
+  });
+  document.getElementById('active-glow-circle').setAttribute('opacity', '0');
+  const target = dirMap[direction];
+  if (!target) return;
+  const needle = document.getElementById('needle-up');
+  needle.style.transformOrigin = '100px 100px';
+  needle.style.transform = `rotate(${target.angle}deg)`;
+  needle.style.transition = 'transform 1s cubic-bezier(0.34, 1.56, 0.64, 1)';
+  setTimeout(() => {
+    document.getElementById(target.el).classList.add('active');
+    document.getElementById(target.dot).setAttribute('fill', '#C9A84C');
+    document.getElementById(target.dot).setAttribute('r', '5');
+    document.getElementById('active-glow-circle').setAttribute('opacity', '1');
+  }, 600);
+}
+
+function sendToGHL(name, email, direction, directionLabel) {
+  if (!GHL_WEBHOOK_URL) return;
+  fetch(GHL_WEBHOOK_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ firstName: name, email, compassDirection: direction, compassLabel: directionLabel, source: 'AI Body Decoder', tags: [`Vortex-${direction}`, 'Body Decoder Lead'] })
+  }).catch(() => {});
+}
+</script>
+</body>
+</html>
