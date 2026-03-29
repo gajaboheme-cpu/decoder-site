@@ -219,7 +219,7 @@
     <img src="https://assets.cdn.filesafe.space/Mk6qgk4V5NI1q3R0QLYa/media/69ac4a45618c8d04bf5350d5.png" alt="Gaja Bohème" class="header-logo">
   </header>
 
-  <!-- SCREEN 1 -->
+  <!-- SCREEN 1: SYMPTOM SELECTION -->
   <div id="screen-1" class="screen active">
     <h1 class="screen-title">What Is Your Body Trying to Tell You?</h1>
     <p class="screen-subtitle">Pick what resonates. Add anything else below. Your body already has the answers.</p>
@@ -231,7 +231,7 @@
     <button class="btn-primary" onclick="goToScreen2()">Reveal My Body Decode ✦</button>
   </div>
 
-  <!-- SCREEN 2 -->
+  <!-- SCREEN 2: LEAD CAPTURE -->
   <div id="screen-2" class="screen">
     <div class="lead-card">
       <p class="result-greeting" style="margin-bottom:10px;">Almost there</p>
@@ -252,7 +252,7 @@
     </div>
   </div>
 
-  <!-- LOADING -->
+  <!-- SCREEN: LOADING -->
   <div id="screen-loading" class="screen">
     <div class="loading-state">
       <div class="loading-orb"></div>
@@ -261,7 +261,7 @@
     </div>
   </div>
 
-  <!-- SCREEN 3 -->
+  <!-- SCREEN 3: RESULTS -->
   <div id="screen-3" class="screen">
     <div class="result-header">
       <p class="result-greeting" id="result-greeting"></p>
@@ -350,158 +350,222 @@
 </div>
 
 <script>
-const TAGS = [
-  "Exhaustion","Tight chest","Gut tension","Shoulder tension",
-  "Numbness","Racing mind","Sugar cravings","No motivation",
-  "Heart heavy","Overwhelmed","Sleep issues","Feeling unseen",
-  "Grief","Fear of visibility","Always giving","Lower back pain",
-  "Skin issues","Headaches","Anxiety","Brain fog",
-  "Jaw tension","Throat tight","Digestive issues","Skipping meals"
-];
+  const TAGS = [
+    "Exhaustion", "Tight chest", "Gut tension", "Shoulder tension",
+    "Numbness", "Racing mind", "Sugar cravings", "No motivation",
+    "Heart heavy", "Overwhelmed", "Sleep issues", "Feeling unseen",
+    "Grief", "Fear of visibility", "Always giving", "Lower back pain",
+    "Skin issues", "Headaches", "Anxiety", "Brain fog",
+    "Jaw tension", "Throat tight", "Digestive issues", "Skipping meals"
+  ];
 
-const GHL_WEBHOOK_URL = "https://services.leadconnectorhq.com/hooks/Mk6qgk4V5NI1q3R0QLYa/webhook-trigger/ZP4Mf48Evn9RfwwPzNXy";
+  const GHL_WEBHOOK_URL = "https://services.leadconnectorhq.com/hooks/Mk6qgk4V5NI1q3R0QLYa/webhook-trigger/ZP4Mf48Evn9RfwwPzNXy";
 
-let selectedTags = [];
-let userData = {};
+  let selectedTags = [];
 
-window.addEventListener('DOMContentLoaded', () => { renderTags(); showScreen(1); });
-
-function renderTags() {
-  const container = document.getElementById('tags-container');
-  TAGS.forEach(tag => {
-    const el = document.createElement('button');
-    el.className = 'tag'; el.textContent = tag;
-    el.addEventListener('click', () => toggleTag(el, tag));
-    container.appendChild(el);
+  window.addEventListener('DOMContentLoaded', function () {
+    renderTags();
+    showScreen(1);
   });
-}
 
-function toggleTag(el, tag) {
-  if (selectedTags.includes(tag)) { selectedTags = selectedTags.filter(t => t !== tag); el.classList.remove('selected'); }
-  else { selectedTags.push(tag); el.classList.add('selected'); }
-}
+  function renderTags() {
+    var container = document.getElementById('tags-container');
+    TAGS.forEach(function (tag) {
+      var el = document.createElement('button');
+      el.className = 'tag';
+      el.textContent = tag;
+      el.addEventListener('click', function () { toggleTag(el, tag); });
+      container.appendChild(el);
+    });
+  }
 
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const target = document.getElementById(`screen-${id}`);
-  if (target) { target.classList.add('active'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-}
+  function toggleTag(el, tag) {
+    if (selectedTags.includes(tag)) {
+      selectedTags = selectedTags.filter(function (t) { return t !== tag; });
+      el.classList.remove('selected');
+    } else {
+      selectedTags.push(tag);
+      el.classList.add('selected');
+    }
+  }
 
-function goToScreen2() {
-  const custom = document.getElementById('custom-input').value.trim();
-  const errEl = document.getElementById('screen1-error');
-  if (selectedTags.length === 0 && !custom) { errEl.classList.add('visible'); return; }
-  errEl.classList.remove('visible'); showScreen(2);
-}
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(function (s) { s.classList.remove('active'); });
+    var target = document.getElementById('screen-' + id);
+    if (target) {
+      target.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
 
-function startOver() {
-  selectedTags = [];
-  document.querySelectorAll('.tag').forEach(t => t.classList.remove('selected'));
-  document.getElementById('custom-input').value = '';
-  document.getElementById('first-name').value = '';
-  document.getElementById('email').value = '';
-  showScreen(1);
-}
+  function goToScreen2() {
+    var custom = document.getElementById('custom-input').value.trim();
+    var errEl = document.getElementById('screen1-error');
+    if (selectedTags.length === 0 && !custom) {
+      errEl.classList.add('visible');
+      return;
+    }
+    errEl.classList.remove('visible');
+    showScreen(2);
+  }
 
-async function runDecode() {
-  const name = document.getElementById('first-name').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const errEl = document.getElementById('screen2-error');
-  if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errEl.classList.add('visible'); return; }
-  errEl.classList.remove('visible');
-  userData = { name, email };
-  const custom = document.getElementById('custom-input').value.trim();
-  const symptoms = [...selectedTags];
-  if (custom) symptoms.push(custom);
-  showScreen('loading');
-  animateLoadingText();
-  try {
-    const response = await fetch('/api/decode', {
+  function startOver() {
+    selectedTags = [];
+    document.querySelectorAll('.tag').forEach(function (t) { t.classList.remove('selected'); });
+    document.getElementById('custom-input').value = '';
+    document.getElementById('first-name').value = '';
+    document.getElementById('email').value = '';
+    showScreen(1);
+  }
+
+  async function runDecode() {
+    var name = document.getElementById('first-name').value.trim();
+    var email = document.getElementById('email').value.trim();
+    var custom = document.getElementById('custom-input').value.trim();
+    var errEl = document.getElementById('screen2-error');
+
+    if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errEl.classList.add('visible');
+      return;
+    }
+    errEl.classList.remove('visible');
+
+    var symptoms = selectedTags.slice();
+    if (custom) symptoms.push(custom);
+
+    showScreen('loading');
+    animateLoadingText();
+
+    try {
+      var response = await fetch('/api/decode', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, email: email, symptoms: symptoms })
+      });
+
+      if (!response.ok) {
+        var errData = await response.json();
+        throw new Error(errData.error || 'Something went wrong. Please try again.');
+      }
+
+      var data = await response.json();
+      var result = data.result;
+
+      sendToGHL(name, email, symptoms, custom, result);
+      renderResults(name, result);
+      showScreen(3);
+
+    } catch (err) {
+      showScreen(2);
+      var errEl2 = document.getElementById('screen2-error');
+      errEl2.textContent = 'Something went wrong: ' + err.message;
+      errEl2.classList.add('visible');
+    }
+  }
+
+  var loadingMessages = [
+    "Reading your body...",
+    "Listening to what it is carrying...",
+    "Mapping your Vortex direction...",
+    "Your decode is almost ready..."
+  ];
+  var loadingIdx = 0;
+  var loadingTimer = null;
+
+  function animateLoadingText() {
+    loadingIdx = 0;
+    var el = document.getElementById('loading-text');
+    if (loadingTimer) clearInterval(loadingTimer);
+    el.textContent = loadingMessages[0];
+    loadingTimer = setInterval(function () {
+      loadingIdx = (loadingIdx + 1) % loadingMessages.length;
+      el.style.opacity = '0';
+      setTimeout(function () {
+        el.textContent = loadingMessages[loadingIdx];
+        el.style.opacity = '1';
+      }, 300);
+    }, 2200);
+  }
+
+  function renderResults(name, result) {
+    if (loadingTimer) clearInterval(loadingTimer);
+
+    document.getElementById('result-greeting').textContent = 'For you, ' + name;
+
+    var decodeEl = document.getElementById('decode-content');
+    var paragraphs = result.decode.split('||').map(function (p) { return p.trim(); }).filter(Boolean);
+    decodeEl.innerHTML = paragraphs.map(function (p) { return '<p>' + p + '</p>'; }).join('');
+
+    animateCompass(result.direction);
+    document.getElementById('compass-label').textContent = result.directionLabel;
+    document.getElementById('compass-sublabel').textContent = result.direction;
+    document.getElementById('compass-explanation').textContent = result.compassExplanation;
+
+    if (result.microGuidance) {
+      document.getElementById('micro-guidance').textContent = result.microGuidance;
+      document.getElementById('micro-guidance-wrap').style.display = 'block';
+      document.getElementById('micro-divider').style.display = 'block';
+    }
+
+    if (result.openLoop) {
+      document.getElementById('open-loop-text').textContent = result.openLoop;
+    }
+  }
+
+  function animateCompass(direction) {
+    var dirMap = {
+      NORTH: { el: 'dir-north', dot: 'dot-north', angle: 0 },
+      EAST:  { el: 'dir-east',  dot: 'dot-east',  angle: 90 },
+      SOUTH: { el: 'dir-south', dot: 'dot-south',  angle: 180 },
+      WEST:  { el: 'dir-west',  dot: 'dot-west',   angle: 270 }
+    };
+
+    Object.values(dirMap).forEach(function (d) {
+      document.getElementById(d.el).classList.remove('active');
+      document.getElementById(d.dot).setAttribute('fill', 'rgba(201,168,76,0.3)');
+      document.getElementById(d.dot).setAttribute('r', '3');
+    });
+    document.getElementById('active-glow-circle').setAttribute('opacity', '0');
+
+    var target = dirMap[direction];
+    if (!target) return;
+
+    var needle = document.getElementById('needle-up');
+    needle.style.transformOrigin = '100px 100px';
+    needle.style.transform = 'rotate(' + target.angle + 'deg)';
+    needle.style.transition = 'transform 1s cubic-bezier(0.34, 1.56, 0.64, 1)';
+
+    setTimeout(function () {
+      document.getElementById(target.el).classList.add('active');
+      document.getElementById(target.dot).setAttribute('fill', '#C9A84C');
+      document.getElementById(target.dot).setAttribute('r', '5');
+      document.getElementById('active-glow-circle').setAttribute('opacity', '1');
+    }, 600);
+  }
+
+  function sendToGHL(name, email, symptoms, customInput, result) {
+    if (!GHL_WEBHOOK_URL) return;
+    var payload = {
+      firstName: name,
+      email: email,
+      selectedSymptoms: Array.isArray(symptoms) ? symptoms.join(', ') : symptoms,
+      customInput: customInput || '',
+      compassDirection: result.direction,
+      compassLabel: result.directionLabel,
+      fullDecode: result.decode,
+      compassExplanation: result.compassExplanation,
+      microGuidance: result.microGuidance || '',
+      openLoop: result.openLoop || '',
+      rawResultJson: JSON.stringify(result),
+      source: 'AI Body Decoder',
+      tags: ['Vortex-' + result.direction, 'Body Decoder Lead']
+    };
+    fetch(GHL_WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, symptoms })
-    });
-    if (!response.ok) { const err = await response.json(); throw new Error(err.error || 'Something went wrong.'); }
-    const data = await response.json();
-    const result = data.result;
-    sendToGHL(name, email, result.direction, result.directionLabel);
-    renderResults(name, result);
-    showScreen(3);
-  } catch (err) {
-    showScreen(2);
-    const e2 = document.getElementById('screen2-error');
-    e2.textContent = `Something went wrong: ${err.message}`; e2.classList.add('visible');
+      body: JSON.stringify(payload)
+    }).catch(function () {});
   }
-}
-
-const loadingMessages = ["Reading your body...","Listening to what it is carrying...","Mapping your Vortex direction...","Your decode is almost ready..."];
-let loadingIdx = 0; let loadingTimer = null;
-
-function animateLoadingText() {
-  loadingIdx = 0;
-  const el = document.getElementById('loading-text');
-  if (loadingTimer) clearInterval(loadingTimer);
-  el.textContent = loadingMessages[0];
-  loadingTimer = setInterval(() => {
-    loadingIdx = (loadingIdx + 1) % loadingMessages.length;
-    el.style.opacity = '0';
-    setTimeout(() => { el.textContent = loadingMessages[loadingIdx]; el.style.opacity = '1'; }, 300);
-  }, 2200);
-}
-
-function renderResults(name, result) {
-  if (loadingTimer) clearInterval(loadingTimer);
-  document.getElementById('result-greeting').textContent = `For you, ${name}`;
-  const decodeEl = document.getElementById('decode-content');
-  const paragraphs = result.decode.split('||').map(p => p.trim()).filter(Boolean);
-  decodeEl.innerHTML = paragraphs.map(p => `<p>${p}</p>`).join('');
-  animateCompass(result.direction);
-  document.getElementById('compass-label').textContent = result.directionLabel;
-  document.getElementById('compass-sublabel').textContent = result.direction;
-  document.getElementById('compass-explanation').textContent = result.compassExplanation;
-  if (result.microGuidance) {
-    document.getElementById('micro-guidance').textContent = result.microGuidance;
-    document.getElementById('micro-guidance-wrap').style.display = 'block';
-    document.getElementById('micro-divider').style.display = 'block';
-  }
-  if (result.openLoop) document.getElementById('open-loop-text').textContent = result.openLoop;
-}
-
-function animateCompass(direction) {
-  const dirMap = {
-    NORTH: { el: 'dir-north', dot: 'dot-north', angle: 0 },
-    EAST:  { el: 'dir-east',  dot: 'dot-east',  angle: 90 },
-    SOUTH: { el: 'dir-south', dot: 'dot-south',  angle: 180 },
-    WEST:  { el: 'dir-west',  dot: 'dot-west',   angle: 270 }
-  };
-  Object.values(dirMap).forEach(d => {
-    document.getElementById(d.el).classList.remove('active');
-    document.getElementById(d.dot).setAttribute('fill', 'rgba(201,168,76,0.3)');
-    document.getElementById(d.dot).setAttribute('r', '3');
-  });
-  document.getElementById('active-glow-circle').setAttribute('opacity', '0');
-  const target = dirMap[direction];
-  if (!target) return;
-  const needle = document.getElementById('needle-up');
-  needle.style.transformOrigin = '100px 100px';
-  needle.style.transform = `rotate(${target.angle}deg)`;
-  needle.style.transition = 'transform 1s cubic-bezier(0.34, 1.56, 0.64, 1)';
-  setTimeout(() => {
-    document.getElementById(target.el).classList.add('active');
-    document.getElementById(target.dot).setAttribute('fill', '#C9A84C');
-    document.getElementById(target.dot).setAttribute('r', '5');
-    document.getElementById('active-glow-circle').setAttribute('opacity', '1');
-  }, 600);
-}
-
-function sendToGHL(name, email, direction, directionLabel) {
-  if (!GHL_WEBHOOK_URL) return;
-  fetch(GHL_WEBHOOK_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ firstName: name, email, compassDirection: direction, compassLabel: directionLabel, source: 'AI Body Decoder', tags: [`Vortex-${direction}`, 'Body Decoder Lead'] })
-  }).catch(() => {});
-}
 </script>
 </body>
 </html>
