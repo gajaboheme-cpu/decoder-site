@@ -4,6 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gaja Bohème | Body Decoder</title>
+
+<!-- PWA Meta Tags -->
+<meta name="theme-color" content="#06100a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Body Decoder">
+<meta name="application-name" content="Body Decoder">
+<meta name="description" content="What is your body trying to tell you? Decode your symptoms through the Vortex Compass.">
+
+<!-- PWA Icons -->
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -23,6 +38,12 @@
     --radius: 12px;
     --font-display: 'Cormorant Garamond', Georgia, serif;
     --font-body: 'Jost', sans-serif;
+
+    /* Element colors */
+    --air-color: #a8c4d4;
+    --fire-color: #d4724a;
+    --water-color: #4a8fa8;
+    --earth-color: #8a6a3a;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html, body {
@@ -71,9 +92,7 @@
   }
 
   /* ── SCREEN 1 HERO ── */
-  .screen1-hero {
-    text-align: center; margin-bottom: 48px; padding: 0 10px;
-  }
+  .screen1-hero { text-align: center; margin-bottom: 48px; padding: 0 10px; }
   .screen1-overline {
     font-size: 10px; font-weight: 500; letter-spacing: 0.3em;
     text-transform: uppercase; color: var(--gold); margin-bottom: 16px;
@@ -91,14 +110,8 @@
   }
 
   /* ── ILLUSTRATED DIVIDER ── */
-  .art-divider {
-    display: flex; align-items: center; gap: 16px;
-    margin: 40px 0 28px;
-  }
-  .art-divider-line {
-    flex: 1; height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent);
-  }
+  .art-divider { display: flex; align-items: center; gap: 16px; margin: 40px 0 28px; }
+  .art-divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent); }
   .art-divider-svg { flex-shrink: 0; opacity: 0.7; }
 
   /* ── TAGS ── */
@@ -109,8 +122,7 @@
   }
   .tags-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 32px; justify-content: center; }
   .tag {
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(201,168,76,0.22);
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(201,168,76,0.22);
     border-radius: 50px; padding: 9px 16px;
     font-family: var(--font-body); font-size: 13px;
     color: var(--text-muted); cursor: pointer;
@@ -147,20 +159,13 @@
     position: relative; overflow: hidden;
   }
   .lead-card::before {
-    content: ''; position: absolute;
-    top: -60px; right: -60px; width: 200px; height: 200px;
+    content: ''; position: absolute; top: -60px; right: -60px;
+    width: 200px; height: 200px;
     background: radial-gradient(circle, rgba(201,168,76,0.07), transparent 70%);
     pointer-events: none;
   }
-  .lead-overline {
-    font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
-    color: var(--gold); margin-bottom: 12px; text-align: center;
-  }
-  .lead-title {
-    font-family: var(--font-display); font-size: clamp(26px, 4vw, 36px);
-    font-weight: 400; color: var(--gold); line-height: 1.2;
-    margin-bottom: 8px; text-align: center;
-  }
+  .lead-overline { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; text-align: center; }
+  .lead-title { font-family: var(--font-display); font-size: clamp(26px, 4vw, 36px); font-weight: 400; color: var(--gold); line-height: 1.2; margin-bottom: 8px; text-align: center; }
   .lead-subtitle { font-size: 14px; color: var(--text-muted); text-align: center; margin-bottom: 32px; line-height: 1.6; }
   .input-group { margin-bottom: 18px; }
   .input-label { display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 7px; }
@@ -230,48 +235,33 @@
 
   /* ── DECODE SECTION ── */
   .decode-section { margin-bottom: 48px; position: relative; }
-  .section-eyebrow {
-    display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
-  }
+  .section-eyebrow { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
   .section-eyebrow-line { flex: 1; height: 1px; background: rgba(201,168,76,0.2); }
-  .section-eyebrow-text {
-    font-size: 9px; font-weight: 600; letter-spacing: 0.32em;
-    text-transform: uppercase; color: var(--gold); white-space: nowrap;
-  }
+  .section-eyebrow-text { font-size: 9px; font-weight: 600; letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold); white-space: nowrap; }
   .decode-text { font-family: var(--font-display); font-size: clamp(17px, 2.5vw, 20px); font-weight: 300; line-height: 1.85; color: var(--text); }
   .decode-text p { margin-bottom: 22px; }
   .decode-text p:last-child { margin-bottom: 0; }
 
   /* ── PULL QUOTE ── */
   .pull-quote {
-    border-left: 3px solid var(--gold);
-    padding: 20px 28px;
+    border-left: 3px solid var(--gold); padding: 20px 28px;
     margin: 32px 0;
     background: linear-gradient(135deg, rgba(201,168,76,0.06), rgba(30,92,42,0.06));
-    border-radius: 0 12px 12px 0;
-    position: relative;
+    border-radius: 0 12px 12px 0; position: relative;
   }
   .pull-quote::before {
-    content: '\201C';
-    font-family: var(--font-display);
-    font-size: 72px; line-height: 0.6;
-    color: var(--gold); opacity: 0.25;
-    position: absolute; top: 20px; left: 16px;
-    pointer-events: none;
+    content: '\201C'; font-family: var(--font-display);
+    font-size: 72px; line-height: 0.6; color: var(--gold); opacity: 0.25;
+    position: absolute; top: 20px; left: 16px; pointer-events: none;
   }
   .pull-quote p {
-    font-family: var(--font-display);
-    font-size: clamp(19px, 3vw, 23px);
-    font-weight: 400; font-style: italic;
-    line-height: 1.6; color: var(--gold-light);
-    margin: 0; padding-left: 24px;
+    font-family: var(--font-display); font-size: clamp(19px, 3vw, 23px);
+    font-weight: 400; font-style: italic; line-height: 1.6;
+    color: var(--gold-light); margin: 0; padding-left: 24px;
   }
 
   /* ── ILLUSTRATED SECTION DIVIDERS ── */
-  .section-divider {
-    display: flex; align-items: center; gap: 20px;
-    margin: 48px 0; padding: 0 10px;
-  }
+  .section-divider { display: flex; align-items: center; gap: 20px; margin: 48px 0; padding: 0 10px; }
   .section-divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(201,168,76,0.25), transparent); }
   .section-divider-center { display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
@@ -282,8 +272,7 @@
   .compass-glow-ring {
     position: absolute; inset: -20px; border-radius: 50%;
     background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
-    animation: compassBreath 3s ease-in-out infinite;
-    pointer-events: none;
+    animation: compassBreath 3s ease-in-out infinite; pointer-events: none;
   }
   @keyframes compassBreath {
     0%, 100% { opacity: 0.5; transform: scale(1); }
@@ -292,34 +281,50 @@
   .compass-glow-ring.active { background: radial-gradient(circle, rgba(201,168,76,0.22) 0%, rgba(30,92,42,0.1) 50%, transparent 70%); animation: compassPulseActive 2s ease-in-out infinite; }
   @keyframes compassPulseActive {
     0%, 100% { opacity: 0.7; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.08); box-shadow: 0 0 60px rgba(201,168,76,0.2); }
+    50% { opacity: 1; transform: scale(1.08); }
   }
-  .compass-direction { position: absolute; font-family: var(--font-display); font-size: 13px; font-weight: 500; color: var(--text-muted); transition: all 0.5s ease; }
-  .compass-direction.active { color: var(--gold-light); text-shadow: 0 0 24px rgba(201,168,76,0.8); transform-origin: center; }
-  .compass-direction.north { top: -28px; left: 50%; transform: translateX(-50%); text-align: center; }
+  .compass-direction { position: absolute; font-family: var(--font-display); font-size: 13px; font-weight: 500; color: var(--text-muted); transition: all 0.5s ease; text-align: center; }
+  .compass-direction.active { color: var(--gold-light); text-shadow: 0 0 24px rgba(201,168,76,0.8); }
+  .compass-direction.north { top: -36px; left: 50%; transform: translateX(-50%); }
   .compass-direction.north.active { transform: translateX(-50%) scale(1.1); }
-  .compass-direction.east { right: -48px; top: 50%; transform: translateY(-50%); }
+  .compass-direction.east { right: -56px; top: 50%; transform: translateY(-50%); }
   .compass-direction.east.active { transform: translateY(-50%) scale(1.1); }
-  .compass-direction.south { bottom: -28px; left: 50%; transform: translateX(-50%); text-align: center; }
+  .compass-direction.south { bottom: -36px; left: 50%; transform: translateX(-50%); }
   .compass-direction.south.active { transform: translateX(-50%) scale(1.1); }
-  .compass-direction.west { left: -48px; top: 50%; transform: translateY(-50%); text-align: right; }
+  .compass-direction.west { left: -56px; top: 50%; transform: translateY(-50%); }
   .compass-direction.west.active { transform: translateY(-50%) scale(1.1); }
-  .compass-result-label { text-align: center; font-family: var(--font-display); font-size: 30px; font-weight: 500; color: var(--gold); margin-bottom: 6px; }
-  .compass-result-sub { text-align: center; font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--emerald-glow); margin-bottom: 24px; }
+
+  /* ── ELEMENT BADGE ── */
+  .element-badge {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    margin: 0 auto 8px; padding: 6px 18px;
+    border-radius: 50px; font-size: 10px; font-weight: 600;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    opacity: 0; transform: translateY(8px);
+    transition: all 0.5s ease 0.8s;
+    border: 1px solid currentColor;
+  }
+  .element-badge.visible { opacity: 1; transform: translateY(0); }
+  .element-badge.air { color: var(--air-color); background: rgba(168,196,212,0.08); }
+  .element-badge.fire { color: var(--fire-color); background: rgba(212,114,74,0.08); }
+  .element-badge.water { color: var(--water-color); background: rgba(74,143,168,0.08); }
+  .element-badge.earth { color: var(--earth-color); background: rgba(138,106,58,0.08); }
+
+  .element-glyph { font-size: 16px; }
+
+  .compass-result-label { text-align: center; font-family: var(--font-display); font-size: 30px; font-weight: 500; color: var(--gold); margin-bottom: 4px; }
+  .compass-result-sub { text-align: center; font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--emerald-glow); margin-bottom: 8px; }
+  .compass-element-wrap { display: flex; justify-content: center; margin-bottom: 20px; }
   .compass-explanation { font-family: var(--font-display); font-size: 18px; font-weight: 300; line-height: 1.8; color: var(--text); text-align: center; max-width: 540px; margin: 0 auto; }
 
   /* ── MICRO GUIDANCE ── */
   .micro-wrap { margin-bottom: 48px; }
   .micro-inner {
     background: linear-gradient(135deg, rgba(30,92,42,0.12), rgba(201,168,76,0.05));
-    border: 1px solid rgba(201,168,76,0.2);
-    border-radius: 16px; padding: 28px 32px;
+    border: 1px solid rgba(201,168,76,0.2); border-radius: 16px; padding: 28px 32px;
     position: relative; overflow: hidden;
   }
-  .micro-inner::after {
-    content: '✦'; position: absolute; bottom: 12px; right: 18px;
-    font-size: 32px; color: rgba(201,168,76,0.08); pointer-events: none;
-  }
+  .micro-inner::after { content: '✦'; position: absolute; bottom: 12px; right: 18px; font-size: 32px; color: rgba(201,168,76,0.08); pointer-events: none; }
   .micro-text { font-family: var(--font-display); font-size: 18px; font-weight: 300; line-height: 1.8; color: var(--text); }
 
   /* ── OPEN LOOP ── */
@@ -329,16 +334,13 @@
   /* ── CTA ── */
   .cta-section {
     background: linear-gradient(160deg, rgba(30,92,42,0.16), rgba(201,168,76,0.07));
-    border: 1px solid rgba(201,168,76,0.22);
-    border-radius: 20px; padding: 44px 36px; text-align: center;
-    position: relative; overflow: hidden;
+    border: 1px solid rgba(201,168,76,0.22); border-radius: 20px; padding: 44px 36px;
+    text-align: center; position: relative; overflow: hidden;
   }
   .cta-section::before {
-    content: ''; position: absolute;
-    bottom: -40px; left: 50%; transform: translateX(-50%);
+    content: ''; position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%);
     width: 300px; height: 200px;
-    background: radial-gradient(ellipse, rgba(30,92,42,0.2), transparent 70%);
-    pointer-events: none;
+    background: radial-gradient(ellipse, rgba(30,92,42,0.2), transparent 70%); pointer-events: none;
   }
   .cta-tension-line { font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 18px; }
   .cta-body-text { font-family: var(--font-display); font-size: 20px; font-weight: 400; line-height: 1.7; color: var(--text); margin-bottom: 32px; max-width: 480px; margin-left: auto; margin-right: auto; }
@@ -355,29 +357,25 @@
   .cta-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(30,92,42,0.55); }
   .cta-btn-secondary {
     display: flex; align-items: center; justify-content: center;
-    background: transparent; border: 1px solid var(--border-hover);
-    border-radius: 50px; padding: 14px 32px;
-    font-family: var(--font-body); font-size: 12px; font-weight: 500;
-    letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--text-muted); text-decoration: none;
-    transition: all 0.22s; width: 100%;
+    background: transparent; border: 1px solid var(--border-hover); border-radius: 50px;
+    padding: 14px 32px; font-family: var(--font-body); font-size: 12px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted);
+    text-decoration: none; transition: all 0.22s; width: 100%;
   }
   .cta-btn-secondary:hover { border-color: var(--gold); color: var(--gold-light); }
 
   /* ── DOWNLOAD BUTTON ── */
   .btn-download {
     display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-    background: transparent;
-    border: 1px solid rgba(201,168,76,0.4);
-    border-radius: 50px; padding: 15px 32px;
-    font-family: var(--font-body); font-size: 12px; font-weight: 500;
-    letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--gold-dim); cursor: pointer;
-    transition: all 0.22s ease; width: auto;
+    background: transparent; border: 1px solid rgba(201,168,76,0.4); border-radius: 50px;
+    padding: 15px 32px; font-family: var(--font-body); font-size: 12px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-dim);
+    cursor: pointer; transition: all 0.22s ease; width: auto;
   }
   .btn-download:hover { border-color: var(--gold); color: var(--gold-light); background: rgba(201,168,76,0.06); }
   .btn-download svg { opacity: 0.7; transition: opacity 0.2s; }
   .btn-download:hover svg { opacity: 1; }
+
   .error-msg { background: rgba(180,60,60,0.12); border: 1px solid rgba(180,60,60,0.3); border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #e09090; margin-bottom: 18px; display: none; }
   .error-msg.visible { display: block; }
 
@@ -390,8 +388,8 @@
   @media (max-width: 520px) {
     .lead-card { padding: 32px 24px; }
     .cta-section { padding: 32px 22px; }
-    .compass-direction.east { right: -38px; }
-    .compass-direction.west { left: -38px; }
+    .compass-direction.east { right: -46px; }
+    .compass-direction.west { left: -46px; }
     .pull-quote { padding: 16px 20px; }
     .pull-quote p { padding-left: 16px; }
   }
@@ -408,14 +406,12 @@
 
   <!-- SCREEN 1: SYMPTOM SELECTION -->
   <div id="screen-1" class="screen active">
-
     <div class="screen1-hero">
       <p class="screen1-overline">The Vortex Body Decoder</p>
       <h1 class="screen1-title">What Is Your Body<br><em>Trying to Tell You?</em></h1>
       <p class="screen1-subtitle">Select what feels true. Add anything else in your own words. Your body already has the answers.</p>
     </div>
 
-    <!-- Illustrated divider -->
     <div class="art-divider">
       <div class="art-divider-line"></div>
       <svg class="art-divider-svg" width="48" height="24" viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -430,7 +426,6 @@
     <span class="tags-label">Select what feels true right now</span>
     <div class="tags-grid" id="tags-container"></div>
 
-    <!-- Illustrated divider -->
     <div class="art-divider" style="margin: 8px 0 24px;">
       <div class="art-divider-line"></div>
       <svg class="art-divider-svg" width="32" height="16" viewBox="0 0 32 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -497,7 +492,7 @@
       <div class="decode-text" id="decode-content"></div>
     </div>
 
-    <!-- Section divider: botanical -->
+    <!-- Section divider -->
     <div class="section-divider">
       <div class="section-divider-line"></div>
       <div class="section-divider-center">
@@ -522,10 +517,28 @@
       </div>
       <div class="compass-wrap">
         <div class="compass-glow-ring" id="compass-glow-ring"></div>
-        <span class="compass-direction north" id="dir-north">Connect<br><small style="font-size:10px;opacity:0.65;font-family:var(--font-body);letter-spacing:0.12em;">NORTH</small></span>
-        <span class="compass-direction east" id="dir-east">Shine<br><small style="font-size:10px;opacity:0.65;font-family:var(--font-body);letter-spacing:0.12em;">EAST</small></span>
-        <span class="compass-direction south" id="dir-south">Nourish<br><small style="font-size:10px;opacity:0.65;font-family:var(--font-body);letter-spacing:0.12em;">SOUTH</small></span>
-        <span class="compass-direction west" id="dir-west">Release<br><small style="font-size:10px;opacity:0.65;font-family:var(--font-body);letter-spacing:0.12em;">WEST</small></span>
+
+        <!-- North -->
+        <span class="compass-direction north" id="dir-north">
+          Connect<br>
+          <small style="font-size:10px;opacity:0.65;font-family:var(--font-body);letter-spacing:0.12em;">NORTH</small>
+        </span>
+        <!-- East -->
+        <span class="compass-direction east" id="dir-east">
+          Shine<br>
+          <small style="font-size:10px;opacity:0.65;font-family:var(--font-body);letter-spacing:0.12em;">EAST</small>
+        </span>
+        <!-- South -->
+        <span class="compass-direction south" id="dir-south">
+          Nourish<br>
+          <small style="font-size:10px;opacity:0.65;font-family:var(--font-body);letter-spacing:0.12em;">SOUTH</small>
+        </span>
+        <!-- West -->
+        <span class="compass-direction west" id="dir-west">
+          Release<br>
+          <small style="font-size:10px;opacity:0.65;font-family:var(--font-body);letter-spacing:0.12em;">WEST</small>
+        </span>
+
         <svg class="compass-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" id="compass-svg">
           <defs>
             <radialGradient id="circleGrad" cx="50%" cy="50%" r="50%">
@@ -546,39 +559,63 @@
               <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
           </defs>
-          <!-- Outer decorative rings -->
           <circle cx="100" cy="100" r="92" fill="none" stroke="rgba(201,168,76,0.08)" stroke-width="1" stroke-dasharray="4 6"/>
           <circle cx="100" cy="100" r="86" fill="none" stroke="rgba(201,168,76,0.15)" stroke-width="0.7"/>
           <circle cx="100" cy="100" r="68" fill="none" stroke="rgba(201,168,76,0.12)" stroke-width="1"/>
           <circle cx="100" cy="100" r="68" fill="url(#circleGrad)"/>
           <circle cx="100" cy="100" r="68" fill="url(#activeGlow)" opacity="0" id="active-glow-circle"/>
-          <!-- Cross lines -->
           <line x1="100" y1="10" x2="100" y2="190" stroke="rgba(201,168,76,0.12)" stroke-width="0.7"/>
           <line x1="10" y1="100" x2="190" y2="100" stroke="rgba(201,168,76,0.12)" stroke-width="0.7"/>
-          <!-- Diagonal marks -->
           <line x1="40" y1="40" x2="50" y2="50" stroke="rgba(201,168,76,0.12)" stroke-width="0.5"/>
           <line x1="160" y1="40" x2="150" y2="50" stroke="rgba(201,168,76,0.12)" stroke-width="0.5"/>
           <line x1="40" y1="160" x2="50" y2="150" stroke="rgba(201,168,76,0.12)" stroke-width="0.5"/>
           <line x1="160" y1="160" x2="150" y2="150" stroke="rgba(201,168,76,0.12)" stroke-width="0.5"/>
-          <!-- Cardinal dots -->
           <circle cx="100" cy="32" r="3.5" fill="rgba(201,168,76,0.3)" id="dot-north"/>
           <circle cx="168" cy="100" r="3.5" fill="rgba(201,168,76,0.3)" id="dot-east"/>
           <circle cx="100" cy="168" r="3.5" fill="rgba(201,168,76,0.3)" id="dot-south"/>
           <circle cx="32" cy="100" r="3.5" fill="rgba(201,168,76,0.3)" id="dot-west"/>
-          <!-- Needle -->
+          <!-- Element glyphs — shown when direction active -->
+          <!-- Air glyph (wavy lines) at North -->
+          <g id="glyph-north" opacity="0" transform="translate(100,100)">
+            <path d="M-8,-6 Q-4,-10 0,-6 Q4,-2 8,-6" stroke="#a8c4d4" stroke-width="1.2" fill="none"/>
+            <path d="M-8,-1 Q-4,-5 0,-1 Q4,3 8,-1" stroke="#a8c4d4" stroke-width="1.2" fill="none"/>
+            <path d="M-8,4 Q-4,0 0,4 Q4,8 8,4" stroke="#a8c4d4" stroke-width="1.2" fill="none"/>
+          </g>
+          <!-- Fire glyph at East -->
+          <g id="glyph-east" opacity="0" transform="translate(100,100)">
+            <path d="M0,-10 C6,-6 8,0 4,4 C8,0 4,-4 0,-10Z" stroke="#d4724a" stroke-width="1" fill="rgba(212,114,74,0.2)"/>
+            <path d="M-4,-4 C0,0 2,4 0,8 C4,2 2,-2 -4,-4Z" stroke="#d4724a" stroke-width="0.8" fill="none"/>
+          </g>
+          <!-- Water glyph at South -->
+          <g id="glyph-south" opacity="0" transform="translate(100,100)">
+            <path d="M0,-10 C6,-4 6,4 0,8 C-6,4 -6,-4 0,-10Z" stroke="#4a8fa8" stroke-width="1" fill="rgba(74,143,168,0.15)"/>
+            <path d="M-4,0 Q0,-4 4,0" stroke="#4a8fa8" stroke-width="0.8" fill="none"/>
+          </g>
+          <!-- Earth glyph at West -->
+          <g id="glyph-west" opacity="0" transform="translate(100,100)">
+            <rect x="-7" y="-7" width="14" height="14" rx="1" stroke="#8a6a3a" stroke-width="1" fill="rgba(138,106,58,0.15)"/>
+            <line x1="-7" y1="0" x2="7" y2="0" stroke="#8a6a3a" stroke-width="0.8"/>
+            <line x1="0" y1="-7" x2="0" y2="7" stroke="#8a6a3a" stroke-width="0.8"/>
+          </g>
           <polygon points="100,34 105,100 100,95 95,100" fill="#C9A84C" opacity="0.85" id="needle-up" filter="url(#needleGlow)"/>
           <polygon points="100,166 105,100 100,106 95,100" fill="rgba(201,168,76,0.25)" id="needle-down"/>
-          <!-- Center -->
           <circle cx="100" cy="100" r="7" fill="var(--bg)" stroke="rgba(201,168,76,0.7)" stroke-width="1.5"/>
           <circle cx="100" cy="100" r="3" fill="var(--gold)"/>
         </svg>
       </div>
+
       <p class="compass-result-label" id="compass-label"></p>
       <p class="compass-result-sub" id="compass-sublabel"></p>
+
+      <!-- Element badge -->
+      <div class="compass-element-wrap">
+        <div class="element-badge" id="element-badge"></div>
+      </div>
+
       <p class="compass-explanation" id="compass-explanation"></p>
     </div>
 
-    <!-- Section divider: leaf -->
+    <!-- Section divider -->
     <div class="section-divider">
       <div class="section-divider-line"></div>
       <div class="section-divider-center">
@@ -647,42 +684,56 @@
 </div>
 
 <script>
-  // Tags with icons
   var TAGS = [
-    { label: "Exhaustion",        icon: "🔥" },
-    { label: "Tight chest",       icon: "💨" },
-    { label: "Gut tension",       icon: "🌀" },
-    { label: "Shoulder tension",  icon: "🪨" },
-    { label: "Numbness",          icon: "🌫️" },
-    { label: "Racing mind",       icon: "⚡" },
-    { label: "Sugar cravings",    icon: "🍯" },
-    { label: "No motivation",     icon: "🌑" },
-    { label: "Heart heavy",       icon: "🫀" },
-    { label: "Overwhelmed",       icon: "🌊" },
-    { label: "Sleep issues",      icon: "🌙" },
-    { label: "Feeling unseen",    icon: "👁️" },
-    { label: "Grief",             icon: "🌧️" },
-    { label: "Fear of visibility",icon: "🪞" },
-    { label: "Always giving",     icon: "🤲" },
-    { label: "Lower back pain",   icon: "🌿" },
-    { label: "Skin issues",       icon: "🍃" },
-    { label: "Headaches",         icon: "💫" },
-    { label: "Anxiety",           icon: "🌪️" },
-    { label: "Brain fog",         icon: "☁️" },
-    { label: "Jaw tension",       icon: "🔒" },
-    { label: "Throat tight",      icon: "🎙️" },
-    { label: "Digestive issues",  icon: "🌱" },
-    { label: "Skipping meals",    icon: "🍵" }
+    { label: "Exhaustion",         icon: "🔥" },
+    { label: "Tight chest",        icon: "💨" },
+    { label: "Gut tension",        icon: "🌀" },
+    { label: "Shoulder tension",   icon: "🪨" },
+    { label: "Numbness",           icon: "🌫️" },
+    { label: "Racing mind",        icon: "⚡" },
+    { label: "Sugar cravings",     icon: "🍯" },
+    { label: "No motivation",      icon: "🌑" },
+    { label: "Heart heavy",        icon: "🫀" },
+    { label: "Overwhelmed",        icon: "🌊" },
+    { label: "Sleep issues",       icon: "🌙" },
+    { label: "Feeling unseen",     icon: "👁️" },
+    { label: "Grief",              icon: "🌧️" },
+    { label: "Fear of visibility", icon: "🪞" },
+    { label: "Always giving",      icon: "🤲" },
+    { label: "Lower back pain",    icon: "🌿" },
+    { label: "Skin issues",        icon: "🍃" },
+    { label: "Headaches",          icon: "💫" },
+    { label: "Anxiety",            icon: "🌪️" },
+    { label: "Brain fog",          icon: "☁️" },
+    { label: "Jaw tension",        icon: "🔒" },
+    { label: "Throat tight",       icon: "🎙️" },
+    { label: "Digestive issues",   icon: "🌱" },
+    { label: "Skipping meals",     icon: "🍵" }
   ];
 
   var GHL_WEBHOOK_URL = "https://services.leadconnectorhq.com/hooks/Mk6qgk4V5NI1q3R0QLYa/webhook-trigger/ZP4Mf48Evn9RfwwPzNXy";
+
+  // Element config
+  var ELEMENT_CONFIG = {
+    NORTH: { element: 'Air',   cls: 'air',   glyph: '🌬️', svgGlyph: 'glyph-north' },
+    EAST:  { element: 'Fire',  cls: 'fire',  glyph: '🔥', svgGlyph: 'glyph-east'  },
+    SOUTH: { element: 'Water', cls: 'water', glyph: '💧', svgGlyph: 'glyph-south' },
+    WEST:  { element: 'Earth', cls: 'earth', glyph: '🌍', svgGlyph: 'glyph-west'  }
+  };
 
   var selectedTags = [];
 
   window.addEventListener('DOMContentLoaded', function () {
     renderTags();
     showScreen(1);
+    registerServiceWorker();
   });
+
+  function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(function() {});
+    }
+  }
 
   function renderTags() {
     var container = document.getElementById('tags-container');
@@ -725,6 +776,10 @@
     document.getElementById('custom-input').value = '';
     document.getElementById('first-name').value = '';
     document.getElementById('email').value = '';
+    // Reset element badge
+    var badge = document.getElementById('element-badge');
+    badge.className = 'element-badge';
+    badge.textContent = '';
     showScreen(1);
   }
 
@@ -798,13 +853,12 @@
 
     document.getElementById('result-greeting').textContent = 'For you, ' + name;
 
-    // Decode paragraphs with pull quote on second paragraph
+    // Decode paragraphs
     var decodeEl = document.getElementById('decode-content');
     var paragraphs = result.decode.split('||').map(function (p) { return p.trim(); }).filter(Boolean);
     var html = '';
     paragraphs.forEach(function (p, i) {
       if (i === 1 && paragraphs.length >= 3) {
-        // Pull quote treatment on second paragraph
         html += '<div class="pull-quote"><p>' + p + '</p></div>';
       } else {
         html += '<p>' + p + '</p>';
@@ -812,10 +866,21 @@
     });
     decodeEl.innerHTML = html;
 
-    // Compass
+    // Compass + element
     animateCompass(result.direction);
     document.getElementById('compass-label').textContent = result.directionLabel;
     document.getElementById('compass-sublabel').textContent = result.direction;
+
+    // Element badge
+    var elementText = result.directionElement || (ELEMENT_CONFIG[result.direction] ? ELEMENT_CONFIG[result.direction].element : '');
+    var elConfig = ELEMENT_CONFIG[result.direction];
+    if (elementText && elConfig) {
+      var badge = document.getElementById('element-badge');
+      badge.className = 'element-badge ' + elConfig.cls;
+      badge.innerHTML = '<span class="element-glyph">' + elConfig.glyph + '</span>' + elementText;
+      setTimeout(function() { badge.classList.add('visible'); }, 900);
+    }
+
     document.getElementById('compass-explanation').textContent = result.compassExplanation;
 
     // Micro guidance
@@ -833,17 +898,18 @@
 
   function animateCompass(direction) {
     var dirMap = {
-      NORTH: { el: 'dir-north', dot: 'dot-north', angle: 0 },
-      EAST:  { el: 'dir-east',  dot: 'dot-east',  angle: 90 },
-      SOUTH: { el: 'dir-south', dot: 'dot-south',  angle: 180 },
-      WEST:  { el: 'dir-west',  dot: 'dot-west',   angle: 270 }
+      NORTH: { el: 'dir-north', dot: 'dot-north', angle: 0,   glyph: 'glyph-north' },
+      EAST:  { el: 'dir-east',  dot: 'dot-east',  angle: 90,  glyph: 'glyph-east'  },
+      SOUTH: { el: 'dir-south', dot: 'dot-south', angle: 180, glyph: 'glyph-south' },
+      WEST:  { el: 'dir-west',  dot: 'dot-west',  angle: 270, glyph: 'glyph-west'  }
     };
 
-    // Reset
+    // Reset all
     Object.values(dirMap).forEach(function (d) {
       document.getElementById(d.el).classList.remove('active');
       document.getElementById(d.dot).setAttribute('fill', 'rgba(201,168,76,0.3)');
       document.getElementById(d.dot).setAttribute('r', '3.5');
+      document.getElementById(d.glyph).setAttribute('opacity', '0');
     });
     document.getElementById('active-glow-circle').setAttribute('opacity', '0');
     document.getElementById('compass-glow-ring').classList.remove('active');
@@ -851,7 +917,7 @@
     var target = dirMap[direction];
     if (!target) return;
 
-    // Animate needle
+    // Animate needle rotation
     var needle = document.getElementById('needle-up');
     needle.style.transformOrigin = '100px 100px';
     needle.style.transform = 'rotate(' + target.angle + 'deg)';
@@ -864,6 +930,11 @@
       document.getElementById(target.dot).setAttribute('r', '6');
       document.getElementById('active-glow-circle').setAttribute('opacity', '1');
       document.getElementById('compass-glow-ring').classList.add('active');
+
+      // Fade in element glyph
+      var glyphEl = document.getElementById(target.glyph);
+      glyphEl.style.transition = 'opacity 0.6s ease';
+      glyphEl.setAttribute('opacity', '1');
     }, 700);
   }
 
@@ -872,6 +943,7 @@
     var decode = document.getElementById('decode-content').innerText || '';
     var direction = document.getElementById('compass-sublabel').textContent || '';
     var directionLabel = document.getElementById('compass-label').textContent || '';
+    var elementBadge = document.getElementById('element-badge').textContent || '';
     var explanation = document.getElementById('compass-explanation').textContent || '';
     var micro = document.getElementById('micro-guidance').textContent || '';
     var openLoop = document.getElementById('open-loop-text').textContent || '';
@@ -887,7 +959,7 @@
       '',
       'Your Vortex Compass Direction',
       '─────────────────────────────────────',
-      directionLabel + ' · ' + direction,
+      directionLabel + ' · ' + direction + (elementBadge ? ' · ' + elementBadge : ''),
       '',
       explanation,
       '',
@@ -922,13 +994,14 @@
       customInput: customInput || '',
       compassDirection: result.direction,
       compassLabel: result.directionLabel,
+      compassElement: result.directionElement || '',
       fullDecode: result.decode,
       compassExplanation: result.compassExplanation,
       microGuidance: result.microGuidance || '',
       openLoop: result.openLoop || '',
       rawResultJson: JSON.stringify(result),
       source: 'AI Body Decoder',
-      tags: ['Vortex-' + result.direction, 'Body Decoder Lead']
+      tags: ['Vortex-' + result.direction, 'Element-' + (result.directionElement || ''), 'Body Decoder Lead']
     };
     fetch(GHL_WEBHOOK_URL, {
       method: 'POST',
