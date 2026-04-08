@@ -663,12 +663,19 @@
     </div>
 
     <div style="margin-top:36px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;">
-      <button class="btn-download" onclick="downloadDecode()">
+      <button class="btn-download" onclick="downloadPDF()">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M7 1 L7 9 M4 6.5 L7 9.5 L10 6.5" stroke="#C9A84C" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M2 11 L12 11" stroke="#C9A84C" stroke-width="1.2" stroke-linecap="round"/>
         </svg>
-        Download My Decode
+        Save as PDF
+      </button>
+      <button class="btn-download" onclick="downloadDecode()" style="font-size:11px;padding:11px 24px;opacity:0.7;">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 1 L7 9 M4 6.5 L7 9.5 L10 6.5" stroke="#C9A84C" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 11 L12 11" stroke="#C9A84C" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        Download as Text
       </button>
       <button class="btn-secondary" style="width:auto;padding:11px 28px;font-size:11px;" onclick="startOver()">Start a New Decode</button>
     </div>
@@ -983,6 +990,202 @@
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  }
+
+  function downloadPDF() {
+    var name = document.getElementById('result-greeting').textContent.replace('For you, ', '') || 'Your';
+    var decode = document.getElementById('decode-content').innerText || '';
+    var direction = document.getElementById('compass-sublabel').textContent || '';
+    var directionLabel = document.getElementById('compass-label').textContent || '';
+    var elementBadge = document.getElementById('element-badge').textContent || '';
+    var explanation = document.getElementById('compass-explanation').textContent || '';
+    var micro = document.getElementById('micro-guidance').textContent || '';
+    var openLoop = document.getElementById('open-loop-text').textContent || '';
+
+    var printWindow = window.open('', '_blank');
+    printWindow.document.write(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Gaja Boheme Body Decode</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #fff;
+      color: #1a1a1a;
+      font-family: 'Jost', sans-serif;
+      font-size: 13px;
+      line-height: 1.75;
+      padding: 48px 52px;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .header {
+      text-align: center;
+      border-bottom: 1px solid #c9a84c;
+      padding-bottom: 24px;
+      margin-bottom: 32px;
+    }
+    .brand {
+      font-family: 'Jost', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: #8a7035;
+      margin-bottom: 8px;
+    }
+    .title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 28px;
+      font-weight: 300;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+    .for-name {
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #9e9688;
+    }
+    .section-label {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: #c9a84c;
+      margin-bottom: 12px;
+      margin-top: 32px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e8dfc8;
+    }
+    .decode-text {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 1.85;
+      color: #2a2a2a;
+    }
+    .decode-text p { margin-bottom: 16px; }
+    .compass-box {
+      background: #f9f6ef;
+      border: 1px solid #e0c97a;
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-top: 8px;
+    }
+    .compass-direction {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 24px;
+      font-weight: 400;
+      color: #8a7035;
+      margin-bottom: 4px;
+    }
+    .compass-sub {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #b8a060;
+      margin-bottom: 14px;
+    }
+    .compass-explanation {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.8;
+      color: #2a2a2a;
+    }
+    .micro-box {
+      background: #f2f7f3;
+      border-left: 3px solid #1e5c2a;
+      padding: 18px 22px;
+      margin-top: 8px;
+      border-radius: 0 8px 8px 0;
+    }
+    .micro-text {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.8;
+      color: #2a2a2a;
+    }
+    .open-loop {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 16px;
+      font-style: italic;
+      color: #6a6258;
+      text-align: center;
+      margin-top: 32px;
+      padding: 0 20px;
+      line-height: 1.7;
+    }
+    .footer {
+      border-top: 1px solid #e8dfc8;
+      margin-top: 40px;
+      padding-top: 20px;
+      text-align: center;
+    }
+    .footer-brand {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #9e9688;
+      margin-bottom: 6px;
+    }
+    .footer-disclaimer {
+      font-size: 10px;
+      font-style: italic;
+      color: #b0a898;
+      line-height: 1.65;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    @media print {
+      body { padding: 32px 40px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="brand">Gaja Bohème · The Vortex Body Decoder</div>
+    <div class="title">Your Personal Decode</div>
+    <div class="for-name">For ${name}</div>
+  </div>
+
+  <div class="section-label">Your Decode</div>
+  <div class="decode-text">${decode.split('\n').filter(Boolean).map(function(p){ return '<p>' + p + '</p>'; }).join('')}</div>
+
+  <div class="section-label">Your Vortex Compass Direction</div>
+  <div class="compass-box">
+    <div class="compass-direction">${directionLabel}</div>
+    <div class="compass-sub">${direction}${elementBadge ? ' · ' + elementBadge : ''}</div>
+    <div class="compass-explanation">${explanation}</div>
+  </div>
+
+  ${micro ? `<div class="section-label">One Place to Start</div>
+  <div class="micro-box"><div class="micro-text">${micro}</div></div>` : ''}
+
+  ${openLoop ? `<div class="open-loop">${openLoop}</div>` : ''}
+
+  <div class="footer">
+    <div class="footer-brand">Gaja Bohème Holistic Wellness · South Florida · gajaboheme.com</div>
+    <div class="footer-disclaimer">This decode is offered for self-reflection and personal insight only. It does not constitute medical advice, diagnosis, or treatment.</div>
+  </div>
+
+  <script>window.onload = function(){ window.print(); }<\/script>
+</body>
+</html>`);
+    printWindow.document.close();
   }
 
   function sendToGHL(name, email, symptoms, customInput, result) {
